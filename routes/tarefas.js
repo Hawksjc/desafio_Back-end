@@ -34,4 +34,42 @@ router.delete('/:id', function(req, res) {
   });
 });
 
+router.post('/', function(req, res) {
+
+  dao.save(req.body).then(([result]) => {
+    console.log(result);
+    if (result.affectedRows > 0)
+      res.json({ message: 'Tarefa salva com sucesso' });
+    else
+      res.json({ message: 'Falha ao salvar tarefa' });
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ error: 'Erro ao salvar tarefa' });
+  });
+});
+
+router.put('/:id', function(req, res) {
+  req.body.id = req.params.id;
+
+  dao.findById(req.params.id).then(([rows]) => {
+    if (rows.length === 0) {
+      res.json({ message: 'Não foi possível achar a tarefa.' });
+    } else {
+      dao.update(req.body).then(([result]) => {
+        console.log(result);
+        if (result.affectedRows > 0)
+          res.json({ message: 'Sucesso! Tarefa foi atualizada' });
+        else
+          res.json({ message: 'Falha ao atualizar tarefa' });
+      }).catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Erro ao atualizar tarefa' });
+      });
+    }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ error: 'Erro ao buscar tarefa' });
+  });
+});
+
 module.exports = router;

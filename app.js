@@ -11,7 +11,7 @@ var app = express();
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var tarefasRouter = require('./routes/tarefas.js');
+var tarefasRouter = require('./routes/tarefas');
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
