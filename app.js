@@ -12,6 +12,7 @@ var app = express();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var tarefasRouter = require('./routes/tarefas');
+var tagsRouter = require('./routes/tags');
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
@@ -33,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/tarefas', tarefasRouter);
+app.use('/tags', tagsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
