@@ -3,13 +3,13 @@ const pool = require("./config");
 let operations = {
 
     list: function() {
-        return pool.promise().query("select * from tarefas")
+        return pool.promise().query("SELECT * FROM tarefas")
     },
     findById: function(id){
         return pool.promise().query('SELECT * FROM tarefas WHERE id = ?', [id]);
     }, 
     remove: function(id){
-        return pool.promise().execute("delete from tarefas where id=?", [id])
+        return pool.promise().execute("DELETE FROM tarefas WHERE id=?", [id])
     },
     save: function(tarefa){
         if (tarefa.status !== 'Em andamento' && tarefa.status !== 'Finalizado') {
@@ -24,7 +24,7 @@ let operations = {
             throw new Error('Status inválido');
         }
 
-        return pool.promise().execute('UPDATE tarefas SET titulo = ?, status = ?, prioridade = ?, descricao = ? WHERE id = ?', 
+        return pool.promise().execute('UPDATE TAREFAS set titulo = ?, status = ?, prioridade = ?, descricao = ? WHERE id = ?', 
         [tarefa.titulo, tarefa.status, tarefa.prioridade, tarefa.descricao, tarefa.id]);
     }
 }
