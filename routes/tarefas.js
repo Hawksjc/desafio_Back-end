@@ -11,6 +11,22 @@ router.get('/', function(req, res, next) {
       })
 });
 
+router.get('/:id', function(req, res) {
+
+  dao.findById(req.params.id)
+    .then(([rows]) => {
+      if (rows.length === 0) {
+        res.status(404).json({ error: 'Tarefa não encontrada' });
+      } else {
+        res.json({ tarefa: rows[0] });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: 'Erro ao buscar tarefa por ID' });
+    });
+});
+
 router.delete('/:id', function(req, res) {
 
   dao.findById(req.params.id).then(([rows]) => {
@@ -49,13 +65,12 @@ router.post('/', function(req, res) {
 });
 
 router.put('/:id', function(req, res) {
-  req.body.id = req.params.id;
 
   dao.findById(req.params.id).then(([rows]) => {
     if (rows.length === 0) {
       res.json({ message: 'Não foi possível achar a tarefa.' });
     } else {
-      dao.update(req.body).then(([result]) => {
+      dao.update(req.body.id).then(([result]) => {
         console.log(result);
         if (result.affectedRows > 0)
           res.json({ message: 'Sucesso! Tarefa foi atualizada' });

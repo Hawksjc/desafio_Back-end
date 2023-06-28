@@ -23,7 +23,7 @@ router.post('/:id/tags', function(req, res) {
   
 router.delete('/:id/tags/:tagId', function(req, res) {
   
-    if (!req.params) {
+    if (!req.params.tagId) {
       res.status(400).json({ error: 'Parâmetros inválidos' });
       return;
     }
@@ -35,8 +35,7 @@ router.delete('/:id/tags/:tagId', function(req, res) {
           res.json({ message: 'Tag removida com sucesso' });
         else
           res.json({ message: 'Falha ao remover tag' });
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(500).json({ error: 'Erro ao remover tag' });
       });
@@ -44,28 +43,24 @@ router.delete('/:id/tags/:tagId', function(req, res) {
   
 router.put('/:id/tags/:tagId', function(req, res) {
   
-    dao.updateTag(req.params.id, req.params.tagId, req.body.nome, req.body.cor)
-      .then(([result]) => {
-        console.log(result);
-        if (result.affectedRows > 0)
-          res.json({ message: 'Tag atualizada com sucesso' });
-        else
-          res.json({ message: 'Falha ao atualizar tag' });
-      })
-      .catch((err) => {
+  dao.updateTag(req.params.id, req.params.tagId, req.body.nome, req.body.cor)
+    .then(([result]) => {
+      console.log(result);
+      if (result.affectedRows > 0)
+        res.json({ message: 'Tag atualizada com sucesso' });
+      else
+        res.json({ message: 'Falha ao atualizar tag' });
+    }).catch((err) => {
         console.log(err);
         res.status(500).json({ error: 'Erro ao atualizar tag' });
       });
 });
 
-  router.get('/:id/tags', function(req, res) {
-    const { id } = req.params;
+router.get('/:id/tags', function(req, res) {
   
-    dao.PegarTagsDaTarefa(id)
-      .then(([rows]) => {
+    dao.PegarTagsDaTarefa(req.params.id).then(([rows]) => {
         res.json({ tags: rows });
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(500).json({ error: 'Erro ao buscar tags da tarefa' });
       });
@@ -73,14 +68,25 @@ router.put('/:id/tags/:tagId', function(req, res) {
   
   router.get('/tags/:tagName', function (req, res) {
   
-    dao.PegarTarefasPorNomeTag(req.params.tagName)
-      .then(([rows]) => {
+    dao.PegarTarefasPorNomeDaTag(req.params.tagName).then(([rows]) => {
         res.json({ tarefas: rows });
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(500).json({ error: 'Erro ao buscar tarefas por tag' });
       });
-  });
+  });  
+
+router.get('/search', function(req, res) {
+  const tags = req.query.tags;
+    
+    const tagArray = tags.split(',');
+  
+    dao.PesquisarTarefasPorTags(tagArray).then(([rows]) => {
+        res.json({ tarefas: rows });
+      }).catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Erro ao pesquisar tarefas por tags' });
+      });
+});
 
 module.exports = router;

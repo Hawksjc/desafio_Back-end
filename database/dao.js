@@ -26,7 +26,8 @@ let operations = {
 
         return pool.promise().execute('UPDATE TAREFAS set titulo = ?, status = ?, prioridade = ?, descricao = ? WHERE id = ?', 
         [tarefa.titulo, tarefa.status, tarefa.prioridade, tarefa.descricao, tarefa.id]);
-    }
+    },
+    
 }
 
 module.exports = operations;

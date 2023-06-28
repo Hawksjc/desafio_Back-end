@@ -34,13 +34,29 @@ let operationsTag = {
         );
     },
       
-    PegarTarefasPorNomeTag: function(tagName) {
+    PegarTarefasPorNomeDaTag: function(tagName) {
         return pool.promise().query(
           `SELECT tarefas.* FROM tarefas
           INNER JOIN tarefa_tags ON tarefas.id = tarefa_tags.tarefa_id
           INNER JOIN tags ON tarefa_tags.tag_id = tags.id
           WHERE tags.nome = ?`, [tagName]
         );
+    },
+    PesquisarTarefasPorTags: function(tags) {
+      const placeholders = Array(tags.length).fill('?').join(',');
+
+    const query = `
+      SELECT tarefas.*
+      FROM tarefas
+      INNER JOIN tarefa_tags ON tarefas.id = tarefa_tags.tarefa_id
+      INNER JOIN tags ON tarefa_tags.tag_id = tags.id
+      WHERE tags.nome IN (${placeholders})
+      GROUP BY tarefas.id
+      HAVING COUNT(DISTINCT tags.nome) = ?`;
+
+    const params = [...tags, tags.length];
+
+    return pool.promise().query(query, params);
     }
 }
 
