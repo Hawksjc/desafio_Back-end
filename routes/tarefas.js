@@ -2,32 +2,40 @@ var express = require('express');
 var router = express.Router();
 var dao = require('../database/dao')
 
-router.get('/', function(req, res, next) {
-    dao.list().then(([ rows ]) => {
-        res.json({ tarefas: rows });
-      }).catch((err) => {
-        console.log(err)
-        res.status(500).json({ error: 'Erro ao buscar tarefas' });
+router.get('/:id?', function(req, res) { 
+  
+  //http://localhost:3001/tarefas/(id) para filtrar
+  //ou 
+  //http://localhost:3001/tarefas/ geral
+  
+  if (req.params.id) {
+    dao.findById(req.params.id)
+      .then(([rows]) => {
+        if (rows.length === 0) {
+          res.status(404).json({ error: 'Tarefa não encontrada' });
+        } else {
+          res.json({ tarefa: rows[0] });
+        }
       })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Erro ao buscar tarefa por ID' });
+      });
+  } else {
+    dao.list()
+      .then(([rows]) => {
+        res.json({ tarefas: rows });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Erro ao buscar tarefas' });
+      });
+  }
 });
 
-router.get('/:id', function(req, res) {
-
-  dao.findById(req.params.id)
-    .then(([rows]) => {
-      if (rows.length === 0) {
-        res.status(404).json({ error: 'Tarefa não encontrada' });
-      } else {
-        res.json({ tarefa: rows[0] });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: 'Erro ao buscar tarefa por ID' });
-    });
-});
-
-router.delete('/:id', function(req, res) {
+router.delete('/:id', function(req, res) { 
+  
+  //http://localhost:3001/tarefas/(id)
 
   dao.findById(req.params.id).then(([rows]) => {
     if (rows.length === 0) {
@@ -50,7 +58,15 @@ router.delete('/:id', function(req, res) {
   });
 });
 
-router.post('/', function(req, res) {
+router.post('/', function(req, res) { 
+  
+  //http://localhost:3001/tarefas 
+  //{
+  //  "titulo": "Adicionar titulo",
+  //  "status": "Em andamento",
+  //  "prioridade": "1",
+  //  "descricao": "Adicionar descrição"
+  //}
 
   dao.save(req.body).then(([result]) => {
     console.log(result);
@@ -64,7 +80,15 @@ router.post('/', function(req, res) {
   });
 });
 
-router.put('/:id', function(req, res) {
+router.put('/:id', function(req, res) { 
+  
+  //http://localhost:3001/tarefas/(id)
+  //{
+  //  "titulo": "Atualizando titulo",
+  //  "status": "Finalizado",
+  //  "prioridade": "10",
+  //  "descricao": "Atualizando descrição"
+  //}
 
   dao.findById(req.params.id).then(([rows]) => {
     if (rows.length === 0) {

@@ -27,6 +27,10 @@ let operations = {
         return pool.promise().execute('UPDATE TAREFAS set titulo = ?, status = ?, prioridade = ?, descricao = ? WHERE id = ?', 
         [tarefa.titulo, tarefa.status, tarefa.prioridade, tarefa.descricao, tarefa.id]);
     },
+    saveUsuario: async function(usuario){
+
+        return pool.promise().execute('INSERT INTO usuario (nome, login, senha) values (?, ?, ?)', [usuario.nome, usuario.login, usuario.senha])
+    },
     
 }
 

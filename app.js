@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var flash = require('express-flash');
 var session = require('express-session');
-const qs = require('qs');
 const port = 3001;
 
 var app = express();
@@ -19,7 +18,6 @@ app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -32,10 +30,12 @@ app.use(session({ cookie: { maxAge: 60000 }}));
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/tarefas', tarefasRouter);
 app.use('/tags', tagsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

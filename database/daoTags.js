@@ -2,14 +2,17 @@ const pool = require("./config");
 
 let operationsTag = {
 
-    listTags: function() {
+    listTag: function() {
         return pool.promise().query('SELECT * FROM tags');
       },
+    findByIdTag: function(id){
+      return pool.promise().query('SELECT * FROM tags WHERE id = ?', [id])
+    },
     removeTag: function(tarefaId, tagId) {
         return pool.promise().execute('DELETE FROM tarefa_tags WHERE tarefa_id = ? AND tag_id = ?', [tarefaId, tagId]);
     },
     updateTag: function(tagId, nome, cor) {
-        return pool.promise().execute('UPDATE tags SET nome = ?, cor = ? WHERE id = ?', [nome, cor, tagId]);
+      return pool.promise().execute('UPDATE tags SET nome = ?, cor = ? WHERE id = ?', [nome, cor, tagId]);
     },
     saveTags: async function (tarefaId, nome, cor) {
         const [result] = await pool.promise().query('SELECT id FROM tags WHERE nome = ?', [nome]);
@@ -45,18 +48,14 @@ let operationsTag = {
     PesquisarTarefasPorTags: function(tags) {
       const placeholders = Array(tags.length).fill('?').join(',');
 
-    const query = `
-      SELECT tarefas.*
-      FROM tarefas
-      INNER JOIN tarefa_tags ON tarefas.id = tarefa_tags.tarefa_id
-      INNER JOIN tags ON tarefa_tags.tag_id = tags.id
-      WHERE tags.nome IN (${placeholders})
-      GROUP BY tarefas.id
-      HAVING COUNT(DISTINCT tags.nome) = ?`;
-
-    const params = [...tags, tags.length];
-
-    return pool.promise().query(query, params);
+    return pool.promise().query(`
+    SELECT tarefas.*
+    FROM tarefas
+    INNER JOIN tarefa_tags ON tarefas.id = tarefa_tags.tarefa_id
+    INNER JOIN tags ON tarefa_tags.tag_id = tags.id
+    WHERE tags.nome IN (${placeholders})
+    GROUP BY tarefas.id
+    HAVING COUNT(DISTINCT tags.nome) = ?`, [...tags, tags.length]);
     }
 }
 
